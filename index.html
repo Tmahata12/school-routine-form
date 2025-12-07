@@ -1,0 +1,2359 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobile Friendly Routine Form</title>
+    
+    <!-- External Libraries for Excel and PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Noto Sans Bengali', 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 10px;
+            line-height: 1.5;
+            font-size: 14px;
+        }
+        
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+        }
+        
+        .header {
+            text-align: center;
+            border-bottom: 3px solid #4472C4;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .header h1 {
+            font-size: 1.5em;
+            color: #4472C4;
+            margin-bottom: 5px;
+        }
+        
+        .header p {
+            font-size: 0.9em;
+            color: #666;
+        }
+        
+        .share-section {
+            background: linear-gradient(135deg, #4CAF50 0%, #388E3C 100%);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            color: white;
+        }
+        
+        .share-section h3 {
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+        
+        .share-link-container {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .share-link-input {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.9em;
+        }
+        
+        .copy-btn {
+            background: white;
+            color: #4CAF50;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.3s;
+            font-family: 'Noto Sans Bengali', 'Arial', sans-serif;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .copy-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+        
+        .copy-btn:active {
+            transform: translateY(0);
+        }
+        
+        @media (max-width: 767px) {
+            .share-link-container {
+                margin-top: 15px;
+            }
+        }
+        
+        .instructions {
+            background: #FFF3CD;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #FF9800;
+            font-size: 0.9em;
+        }
+        
+        .instructions h3 {
+            margin-bottom: 8px;
+            color: #856404;
+            font-size: 1.1em;
+        }
+        
+        .instructions ul {
+            margin-left: 20px;
+            color: #856404;
+        }
+        
+        .section {
+            margin-bottom: 25px;
+            border-left: 4px solid #667eea;
+            padding-left: 10px;
+        }
+        
+        .section-title {
+            font-size: 1.2em;
+            color: white;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            margin-left: -10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .section-title span {
+            font-size: 1em;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 6px;
+            color: #333;
+            font-size: 0.95em;
+        }
+        
+        .required {
+            color: #d32f2f;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 1em;
+            font-family: 'Noto Sans Bengali', 'Arial', sans-serif;
+            transition: all 0.3s;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+        
+        /* Item Cards - Mobile Optimized */
+        .item-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            border: 2px solid #e0e0e0;
+            position: relative;
+        }
+        
+        .item-card.day-card {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            border-color: #2196F3;
+        }
+        
+        .item-card.teacher-card {
+            background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+            border-color: #FF9800;
+        }
+        
+        .item-card.subject-card {
+            background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
+            border-color: #9C27B0;
+        }
+        
+        .item-card.class-card {
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            border-color: #4CAF50;
+        }
+        
+        .card-header {
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .card-header span {
+            flex: 1;
+            min-width: 150px;
+        }
+        
+        .card-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .card-info {
+            font-size: 0.9em;
+            line-height: 1.8;
+        }
+        
+        .card-info div {
+            margin-bottom: 5px;
+        }
+        
+        /* Buttons - Mobile Optimized */
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.95em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Noto Sans Bengali', 'Arial', sans-serif;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        
+        .btn-add {
+            background: linear-gradient(135deg, #4CAF50 0%, #388E3C 100%);
+            color: white;
+        }
+        
+        .btn-edit {
+            background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+            color: white;
+            padding: 8px 12px;
+            font-size: 0.85em;
+            width: auto;
+            margin: 0;
+        }
+        
+        .btn-delete {
+            background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+            color: white;
+            padding: 8px 12px;
+            font-size: 0.85em;
+            width: auto;
+            margin: 0;
+        }
+        
+        .btn-save {
+            background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
+            color: white;
+            width: 48%;
+            margin-right: 4%;
+        }
+        
+        .btn-cancel {
+            background: #757575;
+            color: white;
+            width: 48%;
+        }
+        
+        /* Download buttons styling */
+        .download-section {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .download-section h3 {
+            margin-bottom: 15px;
+            color: #1976D2;
+            font-size: 1.2em;
+        }
+        
+        .download-buttons {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+        
+        .btn-excel {
+            background: linear-gradient(135deg, #107C41 0%, #0e5c31 100%);
+            color: white;
+        }
+        
+        .btn-pdf {
+            background: linear-gradient(135deg, #D32F2F 0%, #B71C1C 100%);
+            color: white;
+        }
+        
+        .btn-json {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        @media (min-width: 768px) {
+            .download-buttons {
+                grid-template-columns: 1fr 1fr 1fr;
+            }
+        }
+        
+        .btn-icon {
+            font-size: 1.2em;
+            margin-right: 5px;
+        }
+        
+        /* Modal - Mobile Optimized */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            overflow-y: auto;
+            padding: 10px;
+        }
+        
+        .modal-content {
+            background-color: white;
+            margin: 20px auto;
+            padding: 20px;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+        }
+        
+        .modal-header {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+        }
+        
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            line-height: 20px;
+        }
+        
+        .close:hover {
+            color: #000;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 30px 15px;
+            color: #999;
+            font-style: italic;
+            font-size: 0.95em;
+        }
+        
+        .submit-section {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 3px double #4472C4;
+        }
+        
+        .help-text {
+            font-size: 0.85em;
+            color: #666;
+            font-style: italic;
+            margin-top: 3px;
+        }
+        
+        .modal-button-row {
+            display: flex;
+            gap: 2%;
+            margin-top: 20px;
+        }
+        
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #323232;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            display: none;
+            z-index: 2000;
+            font-size: 0.95em;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        
+        .toast.show {
+            display: block;
+            animation: slideUp 0.3s ease;
+        }
+        
+        @keyframes slideUp {
+            from {
+                bottom: -50px;
+                opacity: 0;
+            }
+            to {
+                bottom: 20px;
+                opacity: 1;
+            }
+        }
+        
+        /* Desktop Responsive */
+        @media (min-width: 768px) {
+            body {
+                padding: 20px;
+                font-size: 16px;
+            }
+            
+            .container {
+                max-width: 900px;
+                padding: 30px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .btn {
+                width: auto;
+                display: inline-block;
+                margin-right: 10px;
+            }
+            
+            .section-title {
+                font-size: 1.5em;
+            }
+            
+            .modal-content {
+                padding: 30px;
+            }
+        }
+        
+        /* Print Styles - Data Based */
+        @media print {
+            body {
+                background: white;
+                padding: 10px;
+                font-size: 12pt;
+            }
+            
+            .container {
+                box-shadow: none;
+                padding: 20px;
+            }
+            
+            .share-section,
+            .instructions,
+            .download-section,
+            .btn,
+            .card-actions,
+            .modal,
+            .toast,
+            .section-title button,
+            input,
+            select,
+            textarea {
+                display: none !important;
+            }
+            
+            .item-card {
+                page-break-inside: avoid;
+                margin-bottom: 15px;
+                border: 1px solid #333;
+            }
+            
+            .section {
+                page-break-inside: avoid;
+                margin-bottom: 30px;
+            }
+            
+            .section-title {
+                background: #333 !important;
+                color: white !important;
+                padding: 10px;
+                margin-bottom: 15px;
+            }
+            
+            .card-header {
+                background: #f0f0f0;
+                padding: 10px;
+                margin-bottom: 10px;
+            }
+            
+            .card-info {
+                padding: 10px;
+                line-height: 1.8;
+            }
+            
+            .empty-state {
+                display: none;
+            }
+            
+            .print-info {
+                display: block !important;
+                border: 2px solid #333;
+                padding: 15px;
+                margin-bottom: 20px;
+                background: #f9f9f9;
+            }
+            
+            .print-info table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+            
+            .print-info table td {
+                padding: 8px;
+                border-bottom: 1px solid #ddd;
+            }
+            
+            .print-info table td:first-child {
+                font-weight: bold;
+                width: 40%;
+            }
+            
+            h1, h2, h3 {
+                page-break-after: avoid;
+            }
+        }
+        
+        .print-info {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏫 রামনগর হাই স্কুল</h1>
+            <p>RAMNAGAR HIGH SCHOOL</p>
+            <p style="font-size: 0.85em; color: #999;">Mobile Friendly Data Entry Form</p>
+        </div>
+        
+        <!-- PRINT SUMMARY (Only visible when printing) -->
+        <div class="print-info">
+            <h2 style="text-align: center; margin-bottom: 20px;">CLASS ROUTINE DATA COLLECTION SUMMARY</h2>
+            <table>
+                <tr>
+                    <td>School Name:</td>
+                    <td id="printSchoolName">-</td>
+                </tr>
+                <tr>
+                    <td>Address:</td>
+                    <td id="printAddress">-</td>
+                </tr>
+                <tr>
+                    <td>Academic Year:</td>
+                    <td id="printAcademicYear">-</td>
+                </tr>
+                <tr>
+                    <td>Contact:</td>
+                    <td id="printContact">-</td>
+                </tr>
+                <tr>
+                    <td>Date Generated:</td>
+                    <td id="printDate">-</td>
+                </tr>
+            </table>
+        </div>
+        
+        <!-- SHARE SECTION -->
+        <div class="share-section">
+            <h3>🔗 Share Link / শেয়ারযোগ্য লিঙ্ক</h3>
+            <p style="font-size: 0.9em; margin-bottom: 15px;">
+                এই link টি copy করে যেকোনো জায়গায় share করুন। যে link এ click করবে, তার জন্য এই form খুলবে:
+            </p>
+            
+            <!-- Clickable Link Display -->
+            <div style="background: white; padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 2px solid rgba(255,255,255,0.3);">
+                <p style="margin: 0 0 8px 0; font-size: 0.85em; color: #666;">
+                    <strong>📌 Your Form Link:</strong> (Click করে test করতে পারেন ↓)
+                </p>
+                <a href="" id="shareableLink" target="_blank"
+                   style="color: #1976D2; font-size: 0.95em; word-break: break-all; text-decoration: underline; display: block; margin-bottom: 10px; cursor: pointer; font-weight: 500;">
+                </a>
+                <button class="copy-btn" onclick="copyShareableLink()" style="width: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                    📋 Copy Link / লিঙ্ক কপি করুন
+                </button>
+            </div>
+            
+            <div style="background: rgba(255,255,255,0.2); padding: 12px; border-radius: 6px; font-size: 0.85em;">
+                <p style="margin: 0 0 8px 0;"><strong>💡 কিভাবে share করবেন:</strong></p>
+                <p style="margin: 0 0 5px 0;">1. "Copy Link" button এ click করুন</p>
+                <p style="margin: 0 0 5px 0;">2. WhatsApp/Email/SMS যেকোনো জায়গায় paste করুন</p>
+                <p style="margin: 0;">3. যে পাবে, সে link এ click করলেই form খুলবে ✅</p>
+            </div>
+        </div>
+        
+        <div class="instructions">
+            <h3>📋 Instructions / নির্দেশাবলী:</h3>
+            <ul style="margin-left: 15px; margin-top: 8px; font-size: 0.9em;">
+                <li>➕ নতুন entry যোগ করতে "Add" button টিপুন</li>
+                <li>✏️ পরিবর্তন করতে "Edit" button টিপুন</li>
+                <li>🗑️ মুছতে "Delete" button টিপুন</li>
+                <li>💾 শেষে "Submit All Data" টিপুন</li>
+            </ul>
+        </div>
+
+        <!-- SECTION 1: SCHOOL INFO -->
+        <div class="section">
+            <div class="section-title">
+                <span>🏫 School Information</span>
+            </div>
+            
+            <div class="form-group">
+                <label><span class="required">*</span> School Name / স্কুলের নাম:</label>
+                <input type="text" id="schoolName" placeholder="রামনগর হাই স্কুল">
+            </div>
+            
+            <div class="form-group">
+                <label><span class="required">*</span> Address / ঠিকানা:</label>
+                <input type="text" id="address" placeholder="দুর্গাপুর, পশ্চিমবঙ্গ">
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label><span class="required">*</span> Academic Year / শিক্ষাবর্ষ:</label>
+                    <input type="text" id="academicYear" placeholder="২০২৪-২৫">
+                </div>
+                <div class="form-group">
+                    <label>Contact / যোগাযোগ:</label>
+                    <input type="text" id="contact" placeholder="+91-XXXXXXXXXX">
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 2: DAYS -->
+        <div class="section">
+            <div class="section-title">
+                <span>📅 Day Schedule</span>
+                <button class="btn btn-add" onclick="openDayModal()" style="width: auto; padding: 8px 15px; font-size: 0.9em; margin: 0;">➕ Add</button>
+            </div>
+            <div id="daysContainer">
+                <div class="empty-state">
+                    কোনো দিন যোগ করা হয়নি।<br>"Add" button এ click করুন।
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 3: TEACHERS -->
+        <div class="section">
+            <div class="section-title">
+                <span>👨‍🏫 Teachers</span>
+                <button class="btn btn-add" onclick="openTeacherModal()" style="width: auto; padding: 8px 15px; font-size: 0.9em; margin: 0;">➕ Add</button>
+            </div>
+            <div id="teachersContainer">
+                <div class="empty-state">
+                    কোনো শিক্ষক যোগ করা হয়নি।<br>"Add" button এ click করুন।
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 4: SUBJECTS -->
+        <div class="section">
+            <div class="section-title">
+                <span>📖 Subjects</span>
+                <button class="btn btn-add" onclick="openSubjectModal()" style="width: auto; padding: 8px 15px; font-size: 0.9em; margin: 0;">➕ Add</button>
+            </div>
+            <div id="subjectsContainer">
+                <div class="empty-state">
+                    কোনো বিষয় যোগ করা হয়নি।<br>"Add" button এ click করুন।
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 5: CLASSES -->
+        <div class="section">
+            <div class="section-title">
+                <span>📚 Classes</span>
+                <button class="btn btn-add" onclick="openClassModal()" style="width: auto; padding: 8px 15px; font-size: 0.9em; margin: 0;">➕ Add</button>
+            </div>
+            <div id="classesContainer">
+                <div class="empty-state">
+                    কোনো ক্লাস যোগ করা হয়নি।<br>"Add" button এ click করুন।
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 6: ROOM/LAB ALLOCATION -->
+        <div class="section">
+            <div class="section-title">
+                <span>🏛️ Rooms & Labs</span>
+                <button class="btn btn-add" onclick="openRoomModal()" style="width: auto; padding: 8px 15px; font-size: 0.9em; margin: 0;">➕ Add</button>
+            </div>
+            <div id="roomsContainer">
+                <div class="empty-state">
+                    কোনো Room/Lab যোগ করা হয়নি।<br>Optional - প্রয়োজনে add করুন।
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 7: CONSTRAINTS -->
+        <div class="section">
+            <div class="section-title">
+                <span>⚠️ Constraints & Notes</span>
+                <button class="btn btn-add" onclick="openConstraintModal()" style="width: auto; padding: 8px 15px; font-size: 0.9em; margin: 0;">➕ Add</button>
+            </div>
+            <div id="constraintsContainer">
+                <div class="empty-state">
+                    কোনো constraint যোগ করা হয়নি।<br>Optional - বিশেষ শর্ত থাকলে add করুন।
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 8: GENERAL SETTINGS -->
+        <div class="section">
+            <div class="section-title">
+                <span>⚙️ General Settings</span>
+            </div>
+            
+            <div class="form-group">
+                <label>Allow Consecutive Periods? / একই subject পর পর হতে পারে?:</label>
+                <select id="allowConsecutive">
+                    <option value="yes">Yes / হ্যাঁ</option>
+                    <option value="no">No / না</option>
+                    <option value="some">Some subjects only / কিছু বিষয়ের জন্য</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Maximum Consecutive Periods / সর্বোচ্চ পর পর পিরিয়ড:</label>
+                <input type="number" id="maxConsecutive" placeholder="2" value="2">
+            </div>
+            
+            <div class="form-group">
+                <label>Break After Periods / কত পিরিয়ড পর বিরতি:</label>
+                <input type="number" id="breakAfter" placeholder="3" value="3">
+            </div>
+            
+            <div class="form-group">
+                <label>Priority Subjects / অগ্রাধিকার বিষয় (comma separated):</label>
+                <textarea id="prioritySubjects" rows="2" placeholder="গণিত,বিজ্ঞান,ইংরেজি"></textarea>
+                <div class="help-text">যে বিষয়গুলো প্রথমে schedule করতে হবে</div>
+            </div>
+            
+            <div class="form-group">
+                <label>Additional Notes / অতিরিক্ত মন্তব্য:</label>
+                <textarea id="additionalNotes" rows="3" placeholder="কোনো বিশেষ নির্দেশনা বা মন্তব্য..."></textarea>
+            </div>
+        </div>
+
+        <!-- DOWNLOAD SECTION -->
+        <div class="download-section">
+            <h3>💾 Download Data / ডাটা ডাউনলোড করুন</h3>
+            <p style="margin-bottom: 15px; font-size: 0.9em; color: #666;">
+                সব তথ্য দেওয়ার পর আপনার পছন্দের format এ download করুন:
+            </p>
+            <div class="download-buttons">
+                <button class="btn btn-excel" onclick="downloadExcel()">
+                    <span class="btn-icon">📊</span> Download Excel
+                </button>
+                <button class="btn btn-pdf" onclick="downloadPDF()">
+                    <span class="btn-icon">📄</span> Download PDF
+                </button>
+                <button class="btn btn-json" onclick="downloadJSON()">
+                    <span class="btn-icon">📋</span> Download JSON
+                </button>
+            </div>
+            <p style="margin-top: 15px; font-size: 0.85em; color: #666;">
+                💡 Excel = Spreadsheet | PDF = Print Ready | JSON = For Routine Generator
+            </p>
+        </div>
+
+        <!-- SUBMIT SECTION -->
+        <div class="submit-section">
+            <button class="btn btn-submit" onclick="window.print()" style="background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);">
+                🖨️ Print Form / ফর্ম প্রিন্ট করুন
+            </button>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast"></div>
+
+    <!-- DAY MODAL -->
+    <div id="dayModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span id="dayModalTitle">Add Day</span>
+                <span class="close" onclick="closeDayModal()">&times;</span>
+            </div>
+            
+            <div class="form-group">
+                <label><span class="required">*</span> Day / দিন:</label>
+                <select id="dayName">
+                    <option value="">Select / নির্বাচন করুন</option>
+                    <option value="Monday">Monday / সোমবার</option>
+                    <option value="Tuesday">Tuesday / মঙ্গলবার</option>
+                    <option value="Wednesday">Wednesday / বুধবার</option>
+                    <option value="Thursday">Thursday / বৃহস্পতিবার</option>
+                    <option value="Friday">Friday / শুক্রবার</option>
+                    <option value="Saturday">Saturday / শনিবার</option>
+                </select>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label><span class="required">*</span> Start / শুরু:</label>
+                    <input type="time" id="dayStartTime">
+                </div>
+                <div class="form-group">
+                    <label><span class="required">*</span> End / শেষ:</label>
+                    <input type="time" id="dayEndTime">
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label><span class="required">*</span> Tiffin Start:</label>
+                    <input type="time" id="dayTiffinStart">
+                </div>
+                <div class="form-group">
+                    <label><span class="required">*</span> Tiffin End:</label>
+                    <input type="time" id="dayTiffinEnd">
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Meal Start:</label>
+                    <input type="time" id="dayMealStart">
+                </div>
+                <div class="form-group">
+                    <label>Meal End:</label>
+                    <input type="time" id="dayMealEnd">
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label><span class="required">*</span> Total Periods:</label>
+                    <input type="number" id="dayTotalPeriods" placeholder="6">
+                </div>
+                <div class="form-group">
+                    <label><span class="required">*</span> Total Classes:</label>
+                    <input type="number" id="dayTotalClasses" placeholder="6">
+                </div>
+            </div>
+            
+            <div class="modal-button-row">
+                <button class="btn btn-cancel" onclick="closeDayModal()">Cancel</button>
+                <button class="btn btn-save" onclick="saveDay()">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TEACHER MODAL -->
+    <div id="teacherModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span id="teacherModalTitle">Add Teacher</span>
+                <span class="close" onclick="closeTeacherModal()">&times;</span>
+            </div>
+            
+            <div class="form-group">
+                <label><span class="required">*</span> Name / নাম:</label>
+                <input type="text" id="teacherName" placeholder="রমেশ কুমার দাস">
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label><span class="required">*</span> Short / সংক্ষিপ্ত:</label>
+                    <input type="text" id="teacherShort" placeholder="RKD">
+                </div>
+                <div class="form-group">
+                    <label><span class="required">*</span> Subject / বিষয়:</label>
+                    <input type="text" id="teacherSubject" placeholder="বাংলা">
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label><span class="required">*</span> Classes / শ্রেণী:</label>
+                    <input type="text" id="teacherClasses" placeholder="5,6,7,8">
+                </div>
+                <div class="form-group">
+                    <label><span class="required">*</span> Section / সেকশন:</label>
+                    <input type="text" id="teacherSection" placeholder="A,B">
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Weekly Periods:</label>
+                    <input type="number" id="teacherWeekly" placeholder="24">
+                </div>
+                <div class="form-group">
+                    <label>Max Per Day:</label>
+                    <input type="number" id="teacherMaxDay" placeholder="5">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>Available Friday?:</label>
+                <select id="teacherFriday">
+                    <option value="yes">Yes / হ্যাঁ</option>
+                    <option value="no">No / না</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Remarks / মন্তব্য:</label>
+                <textarea id="teacherRemarks" rows="2" placeholder="বিশেষ মন্তব্য..."></textarea>
+            </div>
+            
+            <div class="modal-button-row">
+                <button class="btn btn-cancel" onclick="closeTeacherModal()">Cancel</button>
+                <button class="btn btn-save" onclick="saveTeacher()">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SUBJECT MODAL -->
+    <div id="subjectModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span id="subjectModalTitle">Add Subject</span>
+                <span class="close" onclick="closeSubjectModal()">&times;</span>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label><span class="required">*</span> Code / কোড:</label>
+                    <input type="text" id="subjectCode" placeholder="BEN">
+                </div>
+                <div class="form-group">
+                    <label><span class="required">*</span> Name / নাম:</label>
+                    <input type="text" id="subjectName" placeholder="বাংলা">
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label><span class="required">*</span> Short:</label>
+                    <input type="text" id="subjectShort" placeholder="BN">
+                </div>
+                <div class="form-group">
+                    <label>Classes / ক্লাস:</label>
+                    <input type="text" id="subjectClasses" placeholder="5-10">
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Periods/Week:</label>
+                    <input type="number" id="subjectPeriods" placeholder="5">
+                </div>
+                <div class="form-group">
+                    <label>Lab?:</label>
+                    <select id="subjectLab">
+                        <option value="no">No</option>
+                        <option value="yes">Yes</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>Priority:</label>
+                <select id="subjectPriority">
+                    <option value="high">High</option>
+                    <option value="medium">Medium</option>
+                    <option value="low">Low</option>
+                </select>
+            </div>
+            
+            <div class="modal-button-row">
+                <button class="btn btn-cancel" onclick="closeSubjectModal()">Cancel</button>
+                <button class="btn btn-save" onclick="saveSubject()">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- CLASS MODAL -->
+    <div id="classModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span id="classModalTitle">Add Class</span>
+                <span class="close" onclick="closeClassModal()">&times;</span>
+            </div>
+            
+            <div class="form-group">
+                <label><span class="required">*</span> Class / ক্লাস:</label>
+                <select id="className">
+                    <option value="">Select</option>
+                    <option value="Class V">Class V</option>
+                    <option value="Class VI">Class VI</option>
+                    <option value="Class VII">Class VII</option>
+                    <option value="Class VIII">Class VIII</option>
+                    <option value="Class IX">Class IX</option>
+                    <option value="Class X">Class X</option>
+                </select>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label><span class="required">*</span> Sections:</label>
+                    <input type="number" id="classSections" placeholder="2">
+                </div>
+                <div class="form-group">
+                    <label><span class="required">*</span> Names:</label>
+                    <input type="text" id="classSectionNames" placeholder="A,B">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label><span class="required">*</span> Subjects:</label>
+                <textarea id="classSubjects" rows="2" placeholder="বাংলা,ইংরেজি,গণিত..."></textarea>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Students:</label>
+                    <input type="number" id="classStudents" placeholder="40">
+                </div>
+                <div class="form-group">
+                    <label>Weekly:</label>
+                    <input type="number" id="classWeekly" placeholder="36">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>Daily Periods:</label>
+                <input type="number" id="classDaily" placeholder="6">
+            </div>
+            
+            <div class="modal-button-row">
+                <button class="btn btn-cancel" onclick="closeClassModal()">Cancel</button>
+                <button class="btn btn-save" onclick="saveClass()">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ROOM MODAL -->
+    <div id="roomModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span id="roomModalTitle">Add Room/Lab</span>
+                <span class="close" onclick="closeRoomModal()">&times;</span>
+            </div>
+            
+            <div class="form-group">
+                <label><span class="required">*</span> Room/Lab Name / নাম:</label>
+                <input type="text" id="roomName" placeholder="Computer Lab / কম্পিউটার ল্যাব">
+            </div>
+            
+            <div class="form-group">
+                <label><span class="required">*</span> Room Number / নম্বর:</label>
+                <input type="text" id="roomNumber" placeholder="101">
+            </div>
+            
+            <div class="form-group">
+                <label><span class="required">*</span> Type / ধরন:</label>
+                <select id="roomType">
+                    <option value="classroom">Classroom / শ্রেণীকক্ষ</option>
+                    <option value="lab">Laboratory / ল্যাবরেটরি</option>
+                    <option value="library">Library / গ্রন্থাগার</option>
+                    <option value="hall">Hall / হল</option>
+                    <option value="other">Other / অন্যান্য</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Capacity / ধারণক্ষমতা:</label>
+                <input type="number" id="roomCapacity" placeholder="40">
+            </div>
+            
+            <div class="form-group">
+                <label>Subjects / বিষয় (for labs):</label>
+                <input type="text" id="roomSubjects" placeholder="Computer, Physics, Chemistry">
+                <div class="help-text">যে বিষয়ের জন্য ব্যবহার হবে</div>
+            </div>
+            
+            <div class="form-group">
+                <label>Available Days / কোন দিন উপলব্ধ:</label>
+                <input type="text" id="roomDays" placeholder="Monday,Tuesday,Wednesday" value="All Days">
+            </div>
+            
+            <div class="form-group">
+                <label>Notes / মন্তব্য:</label>
+                <textarea id="roomNotes" rows="2" placeholder="বিশেষ মন্তব্য..."></textarea>
+            </div>
+            
+            <div class="modal-button-row">
+                <button class="btn btn-cancel" onclick="closeRoomModal()">Cancel</button>
+                <button class="btn btn-save" onclick="saveRoom()">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- CONSTRAINT MODAL -->
+    <div id="constraintModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span id="constraintModalTitle">Add Constraint</span>
+                <span class="close" onclick="closeConstraintModal()">&times;</span>
+            </div>
+            
+            <div class="form-group">
+                <label><span class="required">*</span> Constraint Type / ধরন:</label>
+                <select id="constraintType">
+                    <option value="">Select / নির্বাচন করুন</option>
+                    <option value="teacher_unavailable">Teacher Not Available / শিক্ষক অনুপস্থিত</option>
+                    <option value="subject_preference">Subject Time Preference / বিষয়ের সময় পছন্দ</option>
+                    <option value="class_preference">Class Time Preference / ক্লাসের সময় পছন্দ</option>
+                    <option value="consecutive">Consecutive Periods Required / পর পর পিরিয়ড চাই</option>
+                    <option value="avoid_clash">Avoid Clash / সংঘর্ষ এড়ান</option>
+                    <option value="other">Other / অন্যান্য</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label><span class="required">*</span> Related To / সম্পর্কিত:</label>
+                <input type="text" id="constraintRelated" placeholder="Teacher Name / Subject / Class">
+                <div class="help-text">শিক্ষকের নাম, বিষয়, বা ক্লাস</div>
+            </div>
+            
+            <div class="form-group">
+                <label>Day / দিন (optional):</label>
+                <select id="constraintDay">
+                    <option value="">All Days / সব দিন</option>
+                    <option value="Monday">Monday</option>
+                    <option value="Tuesday">Tuesday</option>
+                    <option value="Wednesday">Wednesday</option>
+                    <option value="Thursday">Thursday</option>
+                    <option value="Friday">Friday</option>
+                    <option value="Saturday">Saturday</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Time Period / সময় (optional):</label>
+                <input type="text" id="constraintTime" placeholder="Period 1-2 or 10:00-11:00">
+            </div>
+            
+            <div class="form-group">
+                <label><span class="required">*</span> Description / বর্ণনা:</label>
+                <textarea id="constraintDescription" rows="3" placeholder="বিস্তারিত লিখুন... (e.g., Mr. Das is not available on Monday Period 1-2)"></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label>Priority / অগ্রাধিকার:</label>
+                <select id="constraintPriority">
+                    <option value="high">High / উচ্চ (Must follow)</option>
+                    <option value="medium">Medium / মাধ্যম (Should follow)</option>
+                    <option value="low">Low / নিম্ন (Nice to have)</option>
+                </select>
+            </div>
+            
+            <div class="modal-button-row">
+                <button class="btn btn-cancel" onclick="closeConstraintModal()">Cancel</button>
+                <button class="btn btn-save" onclick="saveConstraint()">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize share link
+        window.onload = function() {
+            const currentUrl = window.location.href;
+            document.getElementById('shareableLink').href = currentUrl;
+            document.getElementById('shareableLink').textContent = currentUrl;
+            
+            // Try to load saved data from localStorage
+            loadSavedData();
+        };
+
+        // Copy shareable link
+        function copyShareableLink() {
+            const link = document.getElementById('shareableLink').href;
+            
+            // Create temporary input to copy
+            const tempInput = document.createElement('input');
+            tempInput.value = link;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            tempInput.setSelectionRange(0, 99999);
+            
+            try {
+                document.execCommand('copy');
+                document.body.removeChild(tempInput);
+                showToast('✅ Link copied! এবার যেকোনো জায়গায় paste করুন!');
+            } catch (err) {
+                // Fallback for modern browsers
+                navigator.clipboard.writeText(link).then(() => {
+                    document.body.removeChild(tempInput);
+                    showToast('✅ Link copied! এবার যেকোনো জায়গায় paste করুন!');
+                }).catch(() => {
+                    document.body.removeChild(tempInput);
+                    showToast('⚠️ Please copy the link manually');
+                });
+            }
+        }
+
+        // Toast notification
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = 'toast show';
+            setTimeout(() => {
+                toast.className = 'toast';
+            }, 3000);
+        }
+
+        // Data Storage
+        let days = [];
+        let teachers = [];
+        let subjects = [];
+        let classes = [];
+        let rooms = [];
+        let constraints = [];
+        let editingIndex = -1;
+
+        // Save data to localStorage
+        function saveToLocalStorage() {
+            const data = {
+                schoolInfo: {
+                    name: document.getElementById('schoolName').value,
+                    address: document.getElementById('address').value,
+                    contact: document.getElementById('contact').value,
+                    academicYear: document.getElementById('academicYear').value
+                },
+                days,
+                teachers,
+                subjects,
+                classes,
+                rooms,
+                constraints,
+                generalSettings: {
+                    allowConsecutive: document.getElementById('allowConsecutive').value,
+                    maxConsecutive: document.getElementById('maxConsecutive').value,
+                    breakAfter: document.getElementById('breakAfter').value,
+                    prioritySubjects: document.getElementById('prioritySubjects').value,
+                    additionalNotes: document.getElementById('additionalNotes').value
+                }
+            };
+            localStorage.setItem('routineFormData', JSON.stringify(data));
+        }
+
+        // Load data from localStorage
+        function loadSavedData() {
+            const savedData = localStorage.getItem('routineFormData');
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                if (data.schoolInfo) {
+                    document.getElementById('schoolName').value = data.schoolInfo.name || '';
+                    document.getElementById('address').value = data.schoolInfo.address || '';
+                    document.getElementById('contact').value = data.schoolInfo.contact || '';
+                    document.getElementById('academicYear').value = data.schoolInfo.academicYear || '';
+                }
+                days = data.days || [];
+                teachers = data.teachers || [];
+                subjects = data.subjects || [];
+                classes = data.classes || [];
+                rooms = data.rooms || [];
+                constraints = data.constraints || [];
+                
+                if (data.generalSettings) {
+                    document.getElementById('allowConsecutive').value = data.generalSettings.allowConsecutive || 'yes';
+                    document.getElementById('maxConsecutive').value = data.generalSettings.maxConsecutive || '2';
+                    document.getElementById('breakAfter').value = data.generalSettings.breakAfter || '3';
+                    document.getElementById('prioritySubjects').value = data.generalSettings.prioritySubjects || '';
+                    document.getElementById('additionalNotes').value = data.generalSettings.additionalNotes || '';
+                }
+                
+                renderDays();
+                renderTeachers();
+                renderSubjects();
+                renderClasses();
+                renderRooms();
+                renderConstraints();
+                
+                showToast('📂 Previous data loaded / আগের ডাটা লোড হয়েছে');
+            }
+        }
+
+        // Day Functions
+        function openDayModal(index = -1) {
+            editingIndex = index;
+            document.getElementById('dayModal').style.display = 'block';
+            
+            if (index >= 0) {
+                const day = days[index];
+                document.getElementById('dayModalTitle').textContent = 'Edit Day';
+                document.getElementById('dayName').value = day.name;
+                document.getElementById('dayStartTime').value = day.startTime;
+                document.getElementById('dayEndTime').value = day.endTime;
+                document.getElementById('dayTiffinStart').value = day.tiffinStart;
+                document.getElementById('dayTiffinEnd').value = day.tiffinEnd;
+                document.getElementById('dayMealStart').value = day.mealStart || '';
+                document.getElementById('dayMealEnd').value = day.mealEnd || '';
+                document.getElementById('dayTotalPeriods').value = day.totalPeriods;
+                document.getElementById('dayTotalClasses').value = day.totalClasses;
+            } else {
+                document.getElementById('dayModalTitle').textContent = 'Add Day';
+                clearDayForm();
+            }
+        }
+
+        function closeDayModal() {
+            document.getElementById('dayModal').style.display = 'none';
+        }
+
+        function clearDayForm() {
+            document.getElementById('dayName').value = '';
+            document.getElementById('dayStartTime').value = '';
+            document.getElementById('dayEndTime').value = '';
+            document.getElementById('dayTiffinStart').value = '';
+            document.getElementById('dayTiffinEnd').value = '';
+            document.getElementById('dayMealStart').value = '';
+            document.getElementById('dayMealEnd').value = '';
+            document.getElementById('dayTotalPeriods').value = '';
+            document.getElementById('dayTotalClasses').value = '';
+        }
+
+        function saveDay() {
+            const day = {
+                name: document.getElementById('dayName').value,
+                startTime: document.getElementById('dayStartTime').value,
+                endTime: document.getElementById('dayEndTime').value,
+                tiffinStart: document.getElementById('dayTiffinStart').value,
+                tiffinEnd: document.getElementById('dayTiffinEnd').value,
+                mealStart: document.getElementById('dayMealStart').value,
+                mealEnd: document.getElementById('dayMealEnd').value,
+                totalPeriods: document.getElementById('dayTotalPeriods').value,
+                totalClasses: document.getElementById('dayTotalClasses').value
+            };
+
+            if (!day.name || !day.startTime || !day.endTime || !day.totalPeriods) {
+                showToast('⚠️ Fill all required fields!');
+                return;
+            }
+
+            if (editingIndex >= 0) {
+                days[editingIndex] = day;
+            } else {
+                days.push(day);
+            }
+
+            renderDays();
+            closeDayModal();
+            saveToLocalStorage();
+            showToast('✅ Day saved! / দিন সংরক্ষিত হয়েছে!');
+        }
+
+        function deleteDay(index) {
+            if (confirm('Delete this day?')) {
+                days.splice(index, 1);
+                renderDays();
+                saveToLocalStorage();
+                showToast('🗑️ Day deleted!');
+            }
+        }
+
+        function renderDays() {
+            const container = document.getElementById('daysContainer');
+            if (days.length === 0) {
+                container.innerHTML = '<div class="empty-state">কোনো দিন যোগ করা হয়নি।<br>"Add" button এ click করুন।</div>';
+                return;
+            }
+
+            container.innerHTML = days.map((day, index) => `
+                <div class="item-card day-card">
+                    <div class="card-header">
+                        <span>📅 ${day.name}</span>
+                        <div class="card-actions">
+                            <button class="btn btn-edit" onclick="openDayModal(${index})">✏️</button>
+                            <button class="btn btn-delete" onclick="deleteDay(${index})">🗑️</button>
+                        </div>
+                    </div>
+                    <div class="card-info">
+                        <div><strong>Time:</strong> ${day.startTime} - ${day.endTime}</div>
+                        <div><strong>Tiffin:</strong> ${day.tiffinStart} - ${day.tiffinEnd}</div>
+                        <div><strong>Meal:</strong> ${day.mealStart || 'N/A'} - ${day.mealEnd || 'N/A'}</div>
+                        <div><strong>Periods:</strong> ${day.totalPeriods} | <strong>Classes:</strong> ${day.totalClasses}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Teacher Functions
+        function openTeacherModal(index = -1) {
+            editingIndex = index;
+            document.getElementById('teacherModal').style.display = 'block';
+            
+            if (index >= 0) {
+                const teacher = teachers[index];
+                document.getElementById('teacherModalTitle').textContent = 'Edit Teacher';
+                document.getElementById('teacherName').value = teacher.name;
+                document.getElementById('teacherShort').value = teacher.short;
+                document.getElementById('teacherSubject').value = teacher.subject;
+                document.getElementById('teacherClasses').value = teacher.classes;
+                document.getElementById('teacherSection').value = teacher.section;
+                document.getElementById('teacherWeekly').value = teacher.weekly || '';
+                document.getElementById('teacherMaxDay').value = teacher.maxDay || '';
+                document.getElementById('teacherFriday').value = teacher.friday || 'yes';
+                document.getElementById('teacherRemarks').value = teacher.remarks || '';
+            } else {
+                document.getElementById('teacherModalTitle').textContent = 'Add Teacher';
+                clearTeacherForm();
+            }
+        }
+
+        function closeTeacherModal() {
+            document.getElementById('teacherModal').style.display = 'none';
+        }
+
+        function clearTeacherForm() {
+            document.getElementById('teacherName').value = '';
+            document.getElementById('teacherShort').value = '';
+            document.getElementById('teacherSubject').value = '';
+            document.getElementById('teacherClasses').value = '';
+            document.getElementById('teacherSection').value = '';
+            document.getElementById('teacherWeekly').value = '';
+            document.getElementById('teacherMaxDay').value = '';
+            document.getElementById('teacherFriday').value = 'yes';
+            document.getElementById('teacherRemarks').value = '';
+        }
+
+        function saveTeacher() {
+            const teacher = {
+                name: document.getElementById('teacherName').value,
+                short: document.getElementById('teacherShort').value,
+                subject: document.getElementById('teacherSubject').value,
+                classes: document.getElementById('teacherClasses').value,
+                section: document.getElementById('teacherSection').value,
+                weekly: document.getElementById('teacherWeekly').value,
+                maxDay: document.getElementById('teacherMaxDay').value,
+                friday: document.getElementById('teacherFriday').value,
+                remarks: document.getElementById('teacherRemarks').value
+            };
+
+            if (!teacher.name || !teacher.short || !teacher.subject || !teacher.classes || !teacher.section) {
+                showToast('⚠️ Fill all required fields!');
+                return;
+            }
+
+            if (editingIndex >= 0) {
+                teachers[editingIndex] = teacher;
+            } else {
+                teachers.push(teacher);
+            }
+
+            renderTeachers();
+            closeTeacherModal();
+            saveToLocalStorage();
+            showToast('✅ Teacher saved!');
+        }
+
+        function deleteTeacher(index) {
+            if (confirm('Delete this teacher?')) {
+                teachers.splice(index, 1);
+                renderTeachers();
+                saveToLocalStorage();
+                showToast('🗑️ Teacher deleted!');
+            }
+        }
+
+        function renderTeachers() {
+            const container = document.getElementById('teachersContainer');
+            if (teachers.length === 0) {
+                container.innerHTML = '<div class="empty-state">কোনো শিক্ষক যোগ করা হয়নি।<br>"Add" button এ click করুন।</div>';
+                return;
+            }
+
+            container.innerHTML = teachers.map((teacher, index) => `
+                <div class="item-card teacher-card">
+                    <div class="card-header">
+                        <span>👨‍🏫 ${teacher.name} (${teacher.short})</span>
+                        <div class="card-actions">
+                            <button class="btn btn-edit" onclick="openTeacherModal(${index})">✏️</button>
+                            <button class="btn btn-delete" onclick="deleteTeacher(${index})">🗑️</button>
+                        </div>
+                    </div>
+                    <div class="card-info">
+                        <div><strong>Subject:</strong> ${teacher.subject}</div>
+                        <div><strong>Classes:</strong> ${teacher.classes} | <strong>Section:</strong> ${teacher.section}</div>
+                        <div><strong>Weekly:</strong> ${teacher.weekly || 'N/A'} | <strong>Max/Day:</strong> ${teacher.maxDay || 'N/A'}</div>
+                        <div><strong>Friday:</strong> ${teacher.friday === 'yes' ? '✅' : '❌'}</div>
+                        ${teacher.remarks ? `<div><strong>Remarks:</strong> ${teacher.remarks}</div>` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Subject Functions
+        function openSubjectModal(index = -1) {
+            editingIndex = index;
+            document.getElementById('subjectModal').style.display = 'block';
+            
+            if (index >= 0) {
+                const subject = subjects[index];
+                document.getElementById('subjectModalTitle').textContent = 'Edit Subject';
+                document.getElementById('subjectCode').value = subject.code;
+                document.getElementById('subjectName').value = subject.name;
+                document.getElementById('subjectShort').value = subject.short;
+                document.getElementById('subjectClasses').value = subject.classes || '';
+                document.getElementById('subjectPeriods').value = subject.periods || '';
+                document.getElementById('subjectLab').value = subject.lab || 'no';
+                document.getElementById('subjectPriority').value = subject.priority || 'medium';
+            } else {
+                document.getElementById('subjectModalTitle').textContent = 'Add Subject';
+                clearSubjectForm();
+            }
+        }
+
+        function closeSubjectModal() {
+            document.getElementById('subjectModal').style.display = 'none';
+        }
+
+        function clearSubjectForm() {
+            document.getElementById('subjectCode').value = '';
+            document.getElementById('subjectName').value = '';
+            document.getElementById('subjectShort').value = '';
+            document.getElementById('subjectClasses').value = '';
+            document.getElementById('subjectPeriods').value = '';
+            document.getElementById('subjectLab').value = 'no';
+            document.getElementById('subjectPriority').value = 'medium';
+        }
+
+        function saveSubject() {
+            const subject = {
+                code: document.getElementById('subjectCode').value,
+                name: document.getElementById('subjectName').value,
+                short: document.getElementById('subjectShort').value,
+                classes: document.getElementById('subjectClasses').value,
+                periods: document.getElementById('subjectPeriods').value,
+                lab: document.getElementById('subjectLab').value,
+                priority: document.getElementById('subjectPriority').value
+            };
+
+            if (!subject.code || !subject.name || !subject.short) {
+                showToast('⚠️ Fill all required fields!');
+                return;
+            }
+
+            if (editingIndex >= 0) {
+                subjects[editingIndex] = subject;
+            } else {
+                subjects.push(subject);
+            }
+
+            renderSubjects();
+            closeSubjectModal();
+            saveToLocalStorage();
+            showToast('✅ Subject saved!');
+        }
+
+        function deleteSubject(index) {
+            if (confirm('Delete this subject?')) {
+                subjects.splice(index, 1);
+                renderSubjects();
+                saveToLocalStorage();
+                showToast('🗑️ Subject deleted!');
+            }
+        }
+
+        function renderSubjects() {
+            const container = document.getElementById('subjectsContainer');
+            if (subjects.length === 0) {
+                container.innerHTML = '<div class="empty-state">কোনো বিষয় যোগ করা হয়নি।<br>"Add" button এ click করুন।</div>';
+                return;
+            }
+
+            container.innerHTML = subjects.map((subject, index) => `
+                <div class="item-card subject-card">
+                    <div class="card-header">
+                        <span>📖 ${subject.name} (${subject.code})</span>
+                        <div class="card-actions">
+                            <button class="btn btn-edit" onclick="openSubjectModal(${index})">✏️</button>
+                            <button class="btn btn-delete" onclick="deleteSubject(${index})">🗑️</button>
+                        </div>
+                    </div>
+                    <div class="card-info">
+                        <div><strong>Short:</strong> ${subject.short} | <strong>Classes:</strong> ${subject.classes || 'N/A'}</div>
+                        <div><strong>Periods/Week:</strong> ${subject.periods || 'N/A'} | <strong>Lab:</strong> ${subject.lab === 'yes' ? '✅' : '❌'}</div>
+                        <div><strong>Priority:</strong> ${subject.priority}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Class Functions
+        function openClassModal(index = -1) {
+            editingIndex = index;
+            document.getElementById('classModal').style.display = 'block';
+            
+            if (index >= 0) {
+                const cls = classes[index];
+                document.getElementById('classModalTitle').textContent = 'Edit Class';
+                document.getElementById('className').value = cls.name;
+                document.getElementById('classSections').value = cls.sections;
+                document.getElementById('classSectionNames').value = cls.sectionNames;
+                document.getElementById('classSubjects').value = cls.subjects;
+                document.getElementById('classStudents').value = cls.students || '';
+                document.getElementById('classWeekly').value = cls.weekly || '';
+                document.getElementById('classDaily').value = cls.daily || '';
+            } else {
+                document.getElementById('classModalTitle').textContent = 'Add Class';
+                clearClassForm();
+            }
+        }
+
+        function closeClassModal() {
+            document.getElementById('classModal').style.display = 'none';
+        }
+
+        function clearClassForm() {
+            document.getElementById('className').value = '';
+            document.getElementById('classSections').value = '';
+            document.getElementById('classSectionNames').value = '';
+            document.getElementById('classSubjects').value = '';
+            document.getElementById('classStudents').value = '';
+            document.getElementById('classWeekly').value = '';
+            document.getElementById('classDaily').value = '';
+        }
+
+        function saveClass() {
+            const cls = {
+                name: document.getElementById('className').value,
+                sections: document.getElementById('classSections').value,
+                sectionNames: document.getElementById('classSectionNames').value,
+                subjects: document.getElementById('classSubjects').value,
+                students: document.getElementById('classStudents').value,
+                weekly: document.getElementById('classWeekly').value,
+                daily: document.getElementById('classDaily').value
+            };
+
+            if (!cls.name || !cls.sections || !cls.sectionNames || !cls.subjects) {
+                showToast('⚠️ Fill all required fields!');
+                return;
+            }
+
+            if (editingIndex >= 0) {
+                classes[editingIndex] = cls;
+            } else {
+                classes.push(cls);
+            }
+
+            renderClasses();
+            closeClassModal();
+            saveToLocalStorage();
+            showToast('✅ Class saved!');
+        }
+
+        function deleteClass(index) {
+            if (confirm('Delete this class?')) {
+                classes.splice(index, 1);
+                renderClasses();
+                saveToLocalStorage();
+                showToast('🗑️ Class deleted!');
+            }
+        }
+
+        function renderClasses() {
+            const container = document.getElementById('classesContainer');
+            if (classes.length === 0) {
+                container.innerHTML = '<div class="empty-state">কোনো ক্লাস যোগ করা হয়নি।<br>"Add" button এ click করুন।</div>';
+                return;
+            }
+
+            container.innerHTML = classes.map((cls, index) => `
+                <div class="item-card class-card">
+                    <div class="card-header">
+                        <span>📚 ${cls.name}</span>
+                        <div class="card-actions">
+                            <button class="btn btn-edit" onclick="openClassModal(${index})">✏️</button>
+                            <button class="btn btn-delete" onclick="deleteClass(${index})">🗑️</button>
+                        </div>
+                    </div>
+                    <div class="card-info">
+                        <div><strong>Sections:</strong> ${cls.sections} (${cls.sectionNames})</div>
+                        <div><strong>Subjects:</strong> ${cls.subjects}</div>
+                        <div><strong>Students:</strong> ${cls.students || 'N/A'} | <strong>Weekly:</strong> ${cls.weekly || 'N/A'} | <strong>Daily:</strong> ${cls.daily || 'N/A'}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Room Functions
+        function openRoomModal(index = -1) {
+            editingIndex = index;
+            document.getElementById('roomModal').style.display = 'block';
+            
+            if (index >= 0) {
+                const room = rooms[index];
+                document.getElementById('roomModalTitle').textContent = 'Edit Room/Lab';
+                document.getElementById('roomName').value = room.name;
+                document.getElementById('roomNumber').value = room.number;
+                document.getElementById('roomType').value = room.type;
+                document.getElementById('roomCapacity').value = room.capacity || '';
+                document.getElementById('roomSubjects').value = room.subjects || '';
+                document.getElementById('roomDays').value = room.days || 'All Days';
+                document.getElementById('roomNotes').value = room.notes || '';
+            } else {
+                document.getElementById('roomModalTitle').textContent = 'Add Room/Lab';
+                clearRoomForm();
+            }
+        }
+
+        function closeRoomModal() {
+            document.getElementById('roomModal').style.display = 'none';
+        }
+
+        function clearRoomForm() {
+            document.getElementById('roomName').value = '';
+            document.getElementById('roomNumber').value = '';
+            document.getElementById('roomType').value = 'classroom';
+            document.getElementById('roomCapacity').value = '';
+            document.getElementById('roomSubjects').value = '';
+            document.getElementById('roomDays').value = 'All Days';
+            document.getElementById('roomNotes').value = '';
+        }
+
+        function saveRoom() {
+            const room = {
+                name: document.getElementById('roomName').value,
+                number: document.getElementById('roomNumber').value,
+                type: document.getElementById('roomType').value,
+                capacity: document.getElementById('roomCapacity').value,
+                subjects: document.getElementById('roomSubjects').value,
+                days: document.getElementById('roomDays').value,
+                notes: document.getElementById('roomNotes').value
+            };
+
+            if (!room.name || !room.number || !room.type) {
+                showToast('⚠️ Fill all required fields!');
+                return;
+            }
+
+            if (editingIndex >= 0) {
+                rooms[editingIndex] = room;
+            } else {
+                rooms.push(room);
+            }
+
+            renderRooms();
+            closeRoomModal();
+            saveToLocalStorage();
+            showToast('✅ Room saved!');
+        }
+
+        function deleteRoom(index) {
+            if (confirm('Delete this room?')) {
+                rooms.splice(index, 1);
+                renderRooms();
+                saveToLocalStorage();
+                showToast('🗑️ Room deleted!');
+            }
+        }
+
+        function renderRooms() {
+            const container = document.getElementById('roomsContainer');
+            if (rooms.length === 0) {
+                container.innerHTML = '<div class="empty-state">কোনো Room/Lab যোগ করা হয়নি।<br>Optional - প্রয়োজনে add করুন।</div>';
+                return;
+            }
+
+            container.innerHTML = rooms.map((room, index) => `
+                <div class="item-card subject-card">
+                    <div class="card-header">
+                        <span>🏛️ ${room.name} (${room.number})</span>
+                        <div class="card-actions">
+                            <button class="btn btn-edit" onclick="openRoomModal(${index})">✏️</button>
+                            <button class="btn btn-delete" onclick="deleteRoom(${index})">🗑️</button>
+                        </div>
+                    </div>
+                    <div class="card-info">
+                        <div><strong>Type:</strong> ${room.type} | <strong>Capacity:</strong> ${room.capacity || 'N/A'}</div>
+                        ${room.subjects ? `<div><strong>Subjects:</strong> ${room.subjects}</div>` : ''}
+                        <div><strong>Available:</strong> ${room.days}</div>
+                        ${room.notes ? `<div><strong>Notes:</strong> ${room.notes}</div>` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Constraint Functions
+        function openConstraintModal(index = -1) {
+            editingIndex = index;
+            document.getElementById('constraintModal').style.display = 'block';
+            
+            if (index >= 0) {
+                const constraint = constraints[index];
+                document.getElementById('constraintModalTitle').textContent = 'Edit Constraint';
+                document.getElementById('constraintType').value = constraint.type;
+                document.getElementById('constraintRelated').value = constraint.related;
+                document.getElementById('constraintDay').value = constraint.day || '';
+                document.getElementById('constraintTime').value = constraint.time || '';
+                document.getElementById('constraintDescription').value = constraint.description;
+                document.getElementById('constraintPriority').value = constraint.priority || 'medium';
+            } else {
+                document.getElementById('constraintModalTitle').textContent = 'Add Constraint';
+                clearConstraintForm();
+            }
+        }
+
+        function closeConstraintModal() {
+            document.getElementById('constraintModal').style.display = 'none';
+        }
+
+        function clearConstraintForm() {
+            document.getElementById('constraintType').value = '';
+            document.getElementById('constraintRelated').value = '';
+            document.getElementById('constraintDay').value = '';
+            document.getElementById('constraintTime').value = '';
+            document.getElementById('constraintDescription').value = '';
+            document.getElementById('constraintPriority').value = 'medium';
+        }
+
+        function saveConstraint() {
+            const constraint = {
+                type: document.getElementById('constraintType').value,
+                related: document.getElementById('constraintRelated').value,
+                day: document.getElementById('constraintDay').value,
+                time: document.getElementById('constraintTime').value,
+                description: document.getElementById('constraintDescription').value,
+                priority: document.getElementById('constraintPriority').value
+            };
+
+            if (!constraint.type || !constraint.related || !constraint.description) {
+                showToast('⚠️ Fill all required fields!');
+                return;
+            }
+
+            if (editingIndex >= 0) {
+                constraints[editingIndex] = constraint;
+            } else {
+                constraints.push(constraint);
+            }
+
+            renderConstraints();
+            closeConstraintModal();
+            saveToLocalStorage();
+            showToast('✅ Constraint saved!');
+        }
+
+        function deleteConstraint(index) {
+            if (confirm('Delete this constraint?')) {
+                constraints.splice(index, 1);
+                renderConstraints();
+                saveToLocalStorage();
+                showToast('🗑️ Constraint deleted!');
+            }
+        }
+
+        function renderConstraints() {
+            const container = document.getElementById('constraintsContainer');
+            if (constraints.length === 0) {
+                container.innerHTML = '<div class="empty-state">কোনো constraint যোগ করা হয়নি।<br>Optional - বিশেষ শর্ত থাকলে add করুন।</div>';
+                return;
+            }
+
+            container.innerHTML = constraints.map((constraint, index) => `
+                <div class="item-card day-card">
+                    <div class="card-header">
+                        <span>⚠️ ${constraint.type.replace(/_/g, ' ')}</span>
+                        <div class="card-actions">
+                            <button class="btn btn-edit" onclick="openConstraintModal(${index})">✏️</button>
+                            <button class="btn btn-delete" onclick="deleteConstraint(${index})">🗑️</button>
+                        </div>
+                    </div>
+                    <div class="card-info">
+                        <div><strong>Related:</strong> ${constraint.related}</div>
+                        ${constraint.day ? `<div><strong>Day:</strong> ${constraint.day}</div>` : ''}
+                        ${constraint.time ? `<div><strong>Time:</strong> ${constraint.time}</div>` : ''}
+                        <div><strong>Description:</strong> ${constraint.description}</div>
+                        <div><strong>Priority:</strong> ${constraint.priority}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Update print info before printing
+        function updatePrintInfo() {
+            document.getElementById('printSchoolName').textContent = document.getElementById('schoolName').value || '-';
+            document.getElementById('printAddress').textContent = document.getElementById('address').value || '-';
+            document.getElementById('printAcademicYear').textContent = document.getElementById('academicYear').value || '-';
+            document.getElementById('printContact').textContent = document.getElementById('contact').value || '-';
+            document.getElementById('printDate').textContent = new Date().toLocaleDateString('en-GB');
+        }
+
+        // Override window.print to update info first
+        const originalPrint = window.print;
+        window.print = function() {
+            updatePrintInfo();
+            originalPrint.call(window);
+        };
+
+        // Download as Excel
+        function downloadExcel() {
+            if (!validateData()) return;
+            
+            const schoolInfo = getSchoolInfo();
+            const generalSettings = getGeneralSettings();
+            
+            // Create workbook
+            const wb = XLSX.utils.book_new();
+            
+            // Sheet 1: School Information
+            const schoolData = [
+                ['RAMNAGAR HIGH SCHOOL - CLASS ROUTINE DATA'],
+                [''],
+                ['School Information'],
+                ['Field', 'Value'],
+                ['School Name', schoolInfo.name],
+                ['Address', schoolInfo.address],
+                ['Academic Year', schoolInfo.academicYear],
+                ['Contact', schoolInfo.contact],
+                ['Date Generated', new Date().toLocaleDateString()]
+            ];
+            const ws1 = XLSX.utils.aoa_to_sheet(schoolData);
+            XLSX.utils.book_append_sheet(wb, ws1, 'School Info');
+            
+            // Sheet 2: Days Schedule
+            if (days.length > 0) {
+                const daysData = [
+                    ['Day Schedule'],
+                    [''],
+                    ['Day', 'Start Time', 'End Time', 'Tiffin Start', 'Tiffin End', 'Meal Start', 'Meal End', 'Total Periods', 'Total Classes']
+                ];
+                days.forEach(day => {
+                    daysData.push([
+                        day.name,
+                        day.startTime,
+                        day.endTime,
+                        day.tiffinStart,
+                        day.tiffinEnd,
+                        day.mealStart || 'N/A',
+                        day.mealEnd || 'N/A',
+                        day.totalPeriods,
+                        day.totalClasses
+                    ]);
+                });
+                const ws2 = XLSX.utils.aoa_to_sheet(daysData);
+                XLSX.utils.book_append_sheet(wb, ws2, 'Days');
+            }
+            
+            // Sheet 3: Teachers
+            if (teachers.length > 0) {
+                const teachersData = [
+                    ['Teachers Information'],
+                    [''],
+                    ['Name', 'Short', 'Subject', 'Classes', 'Section', 'Weekly', 'Max/Day', 'Friday?', 'Remarks']
+                ];
+                teachers.forEach(teacher => {
+                    teachersData.push([
+                        teacher.name,
+                        teacher.short,
+                        teacher.subject,
+                        teacher.classes,
+                        teacher.section,
+                        teacher.weekly || 'N/A',
+                        teacher.maxDay || 'N/A',
+                        teacher.friday,
+                        teacher.remarks || 'N/A'
+                    ]);
+                });
+                const ws3 = XLSX.utils.aoa_to_sheet(teachersData);
+                XLSX.utils.book_append_sheet(wb, ws3, 'Teachers');
+            }
+            
+            // Sheet 4: Subjects
+            if (subjects.length > 0) {
+                const subjectsData = [
+                    ['Subjects Information'],
+                    [''],
+                    ['Code', 'Name', 'Short', 'Classes', 'Periods/Week', 'Lab?', 'Priority']
+                ];
+                subjects.forEach(subject => {
+                    subjectsData.push([
+                        subject.code,
+                        subject.name,
+                        subject.short,
+                        subject.classes || 'N/A',
+                        subject.periods || 'N/A',
+                        subject.lab,
+                        subject.priority
+                    ]);
+                });
+                const ws4 = XLSX.utils.aoa_to_sheet(subjectsData);
+                XLSX.utils.book_append_sheet(wb, ws4, 'Subjects');
+            }
+            
+            // Sheet 5: Classes
+            if (classes.length > 0) {
+                const classesData = [
+                    ['Classes Information'],
+                    [''],
+                    ['Class', 'Sections', 'Section Names', 'Subjects', 'Students', 'Weekly', 'Daily']
+                ];
+                classes.forEach(cls => {
+                    classesData.push([
+                        cls.name,
+                        cls.sections,
+                        cls.sectionNames,
+                        cls.subjects,
+                        cls.students || 'N/A',
+                        cls.weekly || 'N/A',
+                        cls.daily || 'N/A'
+                    ]);
+                });
+                const ws5 = XLSX.utils.aoa_to_sheet(classesData);
+                XLSX.utils.book_append_sheet(wb, ws5, 'Classes');
+            }
+            
+            // Sheet 6: Rooms (if any)
+            if (rooms.length > 0) {
+                const roomsData = [
+                    ['Rooms & Labs'],
+                    [''],
+                    ['Name', 'Number', 'Type', 'Capacity', 'Subjects', 'Available Days', 'Notes']
+                ];
+                rooms.forEach(room => {
+                    roomsData.push([
+                        room.name,
+                        room.number,
+                        room.type,
+                        room.capacity || 'N/A',
+                        room.subjects || 'N/A',
+                        room.days,
+                        room.notes || 'N/A'
+                    ]);
+                });
+                const ws6 = XLSX.utils.aoa_to_sheet(roomsData);
+                XLSX.utils.book_append_sheet(wb, ws6, 'Rooms');
+            }
+            
+            // Sheet 7: Constraints (if any)
+            if (constraints.length > 0) {
+                const constraintsData = [
+                    ['Constraints'],
+                    [''],
+                    ['Type', 'Related To', 'Day', 'Time', 'Description', 'Priority']
+                ];
+                constraints.forEach(constraint => {
+                    constraintsData.push([
+                        constraint.type,
+                        constraint.related,
+                        constraint.day || 'All Days',
+                        constraint.time || 'Any Time',
+                        constraint.description,
+                        constraint.priority
+                    ]);
+                });
+                const ws7 = XLSX.utils.aoa_to_sheet(constraintsData);
+                XLSX.utils.book_append_sheet(wb, ws7, 'Constraints');
+            }
+            
+            // Sheet 8: General Settings
+            const settingsData = [
+                ['General Settings'],
+                [''],
+                ['Setting', 'Value'],
+                ['Allow Consecutive Periods', generalSettings.allowConsecutive],
+                ['Max Consecutive Periods', generalSettings.maxConsecutive],
+                ['Break After Periods', generalSettings.breakAfter],
+                ['Priority Subjects', generalSettings.prioritySubjects || 'N/A'],
+                ['Additional Notes', generalSettings.additionalNotes || 'N/A']
+            ];
+            const ws8 = XLSX.utils.aoa_to_sheet(settingsData);
+            XLSX.utils.book_append_sheet(wb, ws8, 'Settings');
+            
+            // Download
+            XLSX.writeFile(wb, `routine_data_${new Date().getTime()}.xlsx`);
+            showToast('📊 Excel file downloaded! / Excel ফাইল ডাউনলোড হয়েছে!');
+        }
+
+        // Download as PDF
+        function downloadPDF() {
+            if (!validateData()) return;
+            
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            const schoolInfo = getSchoolInfo();
+            let yPos = 20;
+            
+            // Header
+            doc.setFontSize(18);
+            doc.setFont(undefined, 'bold');
+            doc.text('RAMNAGAR HIGH SCHOOL', 105, yPos, { align: 'center' });
+            yPos += 8;
+            doc.setFontSize(14);
+            doc.text('Class Routine - Data Collection', 105, yPos, { align: 'center' });
+            yPos += 15;
+            
+            // School Information
+            doc.setFontSize(12);
+            doc.setFont(undefined, 'bold');
+            doc.text('School Information:', 20, yPos);
+            yPos += 7;
+            doc.setFont(undefined, 'normal');
+            doc.setFontSize(10);
+            doc.text(`School Name: ${schoolInfo.name}`, 25, yPos);
+            yPos += 6;
+            doc.text(`Address: ${schoolInfo.address}`, 25, yPos);
+            yPos += 6;
+            doc.text(`Academic Year: ${schoolInfo.academicYear}`, 25, yPos);
+            yPos += 6;
+            doc.text(`Contact: ${schoolInfo.contact}`, 25, yPos);
+            yPos += 6;
+            doc.text(`Date: ${new Date().toLocaleDateString()}`, 25, yPos);
+            yPos += 12;
+            
+            // Days Summary
+            if (days.length > 0) {
+                doc.setFont(undefined, 'bold');
+                doc.setFontSize(12);
+                doc.text('Day Schedule:', 20, yPos);
+                yPos += 7;
+                doc.setFont(undefined, 'normal');
+                doc.setFontSize(9);
+                days.forEach(day => {
+                    doc.text(`${day.name}: ${day.startTime} - ${day.endTime} (${day.totalPeriods} periods)`, 25, yPos);
+                    yPos += 5;
+                });
+                yPos += 5;
+            }
+            
+            // Teachers Summary
+            if (teachers.length > 0 && yPos < 250) {
+                doc.setFont(undefined, 'bold');
+                doc.setFontSize(12);
+                doc.text(`Teachers: ${teachers.length} total`, 20, yPos);
+                yPos += 7;
+                doc.setFont(undefined, 'normal');
+                doc.setFontSize(9);
+                teachers.slice(0, 10).forEach(teacher => {
+                    if (yPos > 270) return;
+                    doc.text(`${teacher.name} (${teacher.short}) - ${teacher.subject} - Section: ${teacher.section}`, 25, yPos);
+                    yPos += 5;
+                });
+                if (teachers.length > 10) {
+                    doc.text(`... and ${teachers.length - 10} more teachers`, 25, yPos);
+                    yPos += 5;
+                }
+                yPos += 5;
+            }
+            
+            // Add new page if needed
+            if (yPos > 250) {
+                doc.addPage();
+                yPos = 20;
+            }
+            
+            // Subjects Summary
+            if (subjects.length > 0) {
+                doc.setFont(undefined, 'bold');
+                doc.setFontSize(12);
+                doc.text(`Subjects: ${subjects.length} total`, 20, yPos);
+                yPos += 7;
+                doc.setFont(undefined, 'normal');
+                doc.setFontSize(9);
+                subjects.slice(0, 10).forEach(subject => {
+                    if (yPos > 270) return;
+                    doc.text(`${subject.name} (${subject.code}) - ${subject.short}`, 25, yPos);
+                    yPos += 5;
+                });
+                if (subjects.length > 10) {
+                    doc.text(`... and ${subjects.length - 10} more subjects`, 25, yPos);
+                    yPos += 5;
+                }
+                yPos += 5;
+            }
+            
+            // Classes Summary
+            if (classes.length > 0 && yPos < 250) {
+                doc.setFont(undefined, 'bold');
+                doc.setFontSize(12);
+                doc.text(`Classes: ${classes.length} total`, 20, yPos);
+                yPos += 7;
+                doc.setFont(undefined, 'normal');
+                doc.setFontSize(9);
+                classes.forEach(cls => {
+                    if (yPos > 270) return;
+                    doc.text(`${cls.name} - ${cls.sections} sections (${cls.sectionNames})`, 25, yPos);
+                    yPos += 5;
+                });
+                yPos += 5;
+            }
+            
+            // Footer
+            doc.setFontSize(8);
+            doc.setFont(undefined, 'italic');
+            doc.text('Generated by Ramnagar High School - Routine Data Collection System', 105, 285, { align: 'center' });
+            
+            // Download
+            doc.save(`routine_data_${new Date().getTime()}.pdf`);
+            showToast('📄 PDF file downloaded! / PDF ফাইল ডাউনলোড হয়েছে!');
+        }
+
+        // Download as JSON
+        function downloadJSON() {
+            if (!validateData()) return;
+            
+            const schoolInfo = getSchoolInfo();
+            const generalSettings = getGeneralSettings();
+
+            const allData = {
+                schoolInfo,
+                days,
+                teachers,
+                subjects,
+                classes,
+                rooms,
+                constraints,
+                generalSettings,
+                timestamp: new Date().toISOString(),
+                submittedBy: 'Mobile Form v2.0'
+            };
+
+            const dataStr = JSON.stringify(allData, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `routine_data_${new Date().getTime()}.json`;
+            link.click();
+
+            showToast('📋 JSON file downloaded! / JSON ফাইল ডাউনলোড হয়েছে!');
+        }
+
+        // Helper functions
+        function getSchoolInfo() {
+            return {
+                name: document.getElementById('schoolName').value,
+                address: document.getElementById('address').value,
+                contact: document.getElementById('contact').value,
+                academicYear: document.getElementById('academicYear').value
+            };
+        }
+
+        function getGeneralSettings() {
+            return {
+                allowConsecutive: document.getElementById('allowConsecutive').value,
+                maxConsecutive: document.getElementById('maxConsecutive').value,
+                breakAfter: document.getElementById('breakAfter').value,
+                prioritySubjects: document.getElementById('prioritySubjects').value,
+                additionalNotes: document.getElementById('additionalNotes').value
+            };
+        }
+
+        function validateData() {
+            const schoolInfo = getSchoolInfo();
+
+            if (!schoolInfo.name || !schoolInfo.address || !schoolInfo.academicYear) {
+                showToast('⚠️ Please fill school information!');
+                return false;
+            }
+
+            if (days.length === 0) {
+                showToast('⚠️ Please add at least one day schedule!');
+                return false;
+            }
+
+            if (teachers.length === 0) {
+                showToast('⚠️ Please add at least one teacher!');
+                return false;
+            }
+
+            if (subjects.length === 0) {
+                showToast('⚠️ Please add at least one subject!');
+                return false;
+            }
+
+            if (classes.length === 0) {
+                showToast('⚠️ Please add at least one class!');
+                return false;
+            }
+
+            return true;
+        }
+
+        // Close modals on outside click
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
+            }
+        }
+
+        // Auto-save on input change
+        document.addEventListener('input', function(e) {
+            if (e.target.id.includes('school') || e.target.id.includes('academic') || 
+                e.target.id.includes('address') || e.target.id.includes('contact')) {
+                saveToLocalStorage();
+            }
+        });
+    </script>
+</body>
+</html>
